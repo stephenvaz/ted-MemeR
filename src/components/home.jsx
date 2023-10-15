@@ -27,7 +27,6 @@ function Home() {
         }
         else {
             const share = localStorage.getItem("sharing")
-            console.log("share",share)
             if (share == null) {
                 localStorage.setItem("sharing", true)
                 setShow(true)
@@ -88,17 +87,35 @@ function Home() {
                 </div>
             )}
             <div className="mt-4 w-full flex flex-row justify-center gap-4 items-center">
-                <Button colorScheme="blue" variant="outline" onClick={generateMeme}>Generate a meme</Button>
-                {auto ?
-                    (<Button colorScheme="red" variant="solid" onClick={() => setAuto(false)}>Stop</Button>) :
-                    (<Button colorScheme="teal" variant="outline" onClick={() => {
+            <Button 
+                colorScheme="whiteAlpha" 
+                variant="outline" 
+                onClick={generateMeme}
+                backgroundColor={"rgba(0, 0, 0, 0.2)"} // Add this line
+            >
+                Generate a meme
+            </Button>
 
-                        setAuto(true)
-                        autoMeme()
-                    }}>Auto</Button>)
-                }
-                {img && sharing && (
-                    <Button colorScheme="green" variant="outline" onClick={
+            {auto ?
+                (<Button colorScheme="red" variant="solid" onClick={() => setAuto(false)}>Stop</Button>) :
+                (<Button 
+                    colorScheme="grey" 
+                    variant="outline" 
+                    onClick={() => {
+                        setAuto(true);
+                        autoMeme();
+                    }}
+                    backgroundColor={"rgba(255, 255, 255, 0.2)"} // Add this line
+                >
+                    Auto
+                </Button>)
+            }
+
+            {img && sharing && (
+                <Button 
+                    colorScheme="green" 
+                    variant="outline" 
+                    onClick={
                         // share image
                         () => {
                             navigator.share({
@@ -107,11 +124,15 @@ function Home() {
                                 url: img,
                             })
                         }
-                    }>
-                        <FaShareNodes mx="2px" />
-                    </Button>
-                )}
-            </div>
+                    }
+                    backgroundColor={
+                        "rgba(255, 255, 255, 0.2)"
+                    } // Add this line
+                >
+                    <FaShareNodes mx="2px" />
+                </Button>
+            )}
+        </div>
         </div>
     )
 }
