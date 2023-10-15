@@ -1,0 +1,28 @@
+.animate-gradient {
+    position: relative;
+    background-color: rgba(0, 0, 0, 0.2); /* Corrected opacity */
+    z-index: 1;
+    border-radius: 0.375rem;
+}
+
+.animate-gradient::before {
+    content: "";
+    position: absolute;
+    top: -4px; /* Increased border thickness */
+    right: -4px;
+    bottom: -4px;
+    left: -4px;
+    z-index: -1;
+    background: linear-gradient(45deg, rgba(58, 58, 158, 0.6), rgba(136, 136, 255, 0.6), rgba(0, 104, 255, 0.6));
+    border-radius: 0.5rem; /* Increased a bit to keep the rounded corners while adjusting for the thicker border */
+    animation: gradient 15s linear infinite;
+}
+
+@keyframes gradient {
+    0% {
+        background-position: 100% 0%;
+    }
+    100% {
+        background-position: 0% 100%;
+    }
+}
