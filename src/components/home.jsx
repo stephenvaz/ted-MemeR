@@ -6,8 +6,18 @@ import Meme from "./meme";
 
 import { useToast } from '@chakra-ui/react'
 import { FaShareNodes } from 'react-icons/fa6'
+import {FiLink2} from 'react-icons/fi'
 
 function Home() {
+
+
+    const encodedParams = new URLSearchParams();
+    
+    const headers = {
+        'content-type': 'application/x-www-form-urlencoded',
+        'X-RapidAPI-Key': import.meta.env.VITE_RAPID,
+        'X-RapidAPI-Host': 'shorturl9.p.rapidapi.com'
+    }
 
     const memeAPI = "https://meme-api.com/gimme"
     const toast = useToast()
@@ -23,7 +33,7 @@ function Home() {
     React.useEffect(() => {
         if (navigator.share) {
             setSharing(true)
-            
+
         }
         else {
             const share = localStorage.getItem("sharing")
@@ -79,6 +89,41 @@ function Home() {
         }
     }, [auto]);
 
+    const shareUrl = async () => {
+        try {
+            encodedParams.set('url', img);
+            const resp = await axios.post('https://shorturl9.p.rapidapi.com/functions/api.php', 
+                encodedParams,
+                {
+                    headers: headers
+
+                })
+            const data = resp.data
+            // console.log(data.url)
+            if (data && data.url) {
+                navigator.clipboard.writeText(data.url)
+                toast({
+                    title: "Link copied to clipboard",
+                    description: "You can now share the link",
+                    status: "success",
+                    duration: 3000,
+                    isClosable: true,
+                })
+            }
+
+        }
+        catch (e) {
+            console.log(e)
+            toast({
+                title: "Error",
+                description: "Something went wrong",
+                status: "error",
+                duration: 3000,
+                isClosable: true,
+            })
+        }
+    }
+
     return (
         <div className="flex flex-col items-center justify-center h-screen">
             {img && (
@@ -87,52 +132,65 @@ function Home() {
                 </div>
             )}
             <div className="mt-4 w-full flex flex-row justify-center gap-4 items-center">
-            <Button 
-                colorScheme="whiteAlpha" 
-                variant="outline" 
-                onClick={generateMeme}
-                backgroundColor={"rgba(0, 0, 0, 0.2)"} // Add this line
-            >
-                Generate a meme
-            </Button>
-
-            {auto ?
-                (<Button colorScheme="red" variant="solid" onClick={() => setAuto(false)}>Stop</Button>) :
-                (<Button 
-                    colorScheme="grey" 
-                    variant="outline" 
-                    onClick={() => {
-                        setAuto(true);
-                        autoMeme();
-                    }}
-                    backgroundColor={"rgba(255, 255, 255, 0.2)"} // Add this line
+                <Button
+                    colorScheme="whiteAlpha"
+                    variant="outline"
+                    onClick={generateMeme}
+                    backgroundColor={"rgba(0, 0, 0, 0.2)"}
+                    disabled={loading || auto}
                 >
-                    Auto
-                </Button>)
-            }
-
-            {img && sharing && (
-                <Button 
-                    colorScheme="green" 
-                    variant="outline" 
-                    onClick={
-                        // share image
-                        () => {
-                            navigator.share({
-                                title: "Meme",
-                                text: "Check out this meme!",
-                                url: img,
-                            })
-                        }
-                    }
-                    backgroundColor={
-                        "rgba(255, 255, 255, 0.2)"
-                    } // Add this line
-                >
-                    <FaShareNodes mx="2px" />
+                    Generate a meme
                 </Button>
-            )}
-        </div>
+
+                {auto ?
+                    (<Button colorScheme="red" variant="solid" onClick={() => setAuto(false)}>Stop</Button>) :
+                    (<Button
+                        colorScheme="grey"
+                        variant="outline"
+                        onClick={() => {
+                            setAuto(true);
+                            autoMeme();
+                        }}
+                        backgroundColor={"rgba(255, 255, 255, 0.2)"}
+                    >
+                        Auto
+                    </Button>)
+                }
+
+                {img && sharing && (
+                    <Button
+                        colorScheme="green"
+                        variant="outline"
+                        onClick={
+                            () => {
+                                navigator.share({
+                                    title: "Meme",
+                                    text: "Check out this meme!",
+                                    url: img,
+                                })
+                            }
+                        }
+                        backgroundColor={
+                            "rgba(255, 255, 255, 0.2)"
+                        }
+                    >
+                        <FaShareNodes mx="2px" />
+                    </Button>
+                )}
+
+                {img && (
+                    <Button
+                        colorScheme="green"
+                        variant="outline"
+                        onClick={shareUrl}
+                        backgroundColor={
+                            "rgba(255, 255, 255, 0.2)"
+                        }
+                    >
+                        <FiLink2 mx="2px" />
+                    </Button>
+                )}
+            </div>
         </div>
     )
 }
